@@ -4,7 +4,6 @@
 #include <vector>
 #include <queue>
 #include <set>
-
 #include <string>
 #include <cmath>
 #include <algorithm>
@@ -1212,9 +1211,9 @@ public:
             Node("House 15", 1550, 400),
             Node("House 16", 1550, 500),
             Node("House 17", 1550, 650),
-            Node("Store 2", 1450, 700),
-            Node("WareHouse", 900, 750),
-            Node("Distributor", 400, 600)};
+            Node("Store 2", 1450,750),
+            Node("WareHouse", 900, 700),
+            Node("Distributor", 450, 720)};
 
         // Initialize edges with weights
         edges = {
@@ -1243,7 +1242,9 @@ public:
             Edge(1, 23, 30),
             Edge(23, 22, 25),
             Edge(5, 9, 12),
-            Edge(13, 16, 12)};
+            Edge(13, 16, 12),
+            Edge(9,22,14),
+            Edge(14,22,20)};
     }
 
     void run()
@@ -1300,9 +1301,9 @@ int main()
             Node("House 15", 1550, 400),
             Node("House 16", 1550, 500),
             Node("House 17", 1550, 650),
-            Node("Store 2", 1450, 700),
-            Node("WareHouse", 900, 750),
-            Node("Distributor", 400, 600)};
+            Node("Store 2", 1450, 750),
+            Node("WareHouse", 900, 700),
+            Node("Distributor",450, 720)};
 
         std::vector<Edge> edges = {
             Edge(0, 1, 10),
@@ -1330,7 +1331,9 @@ int main()
             Edge(1, 23, 30),
             Edge(23, 22, 25),
             Edge(5, 9, 12),
-            Edge(13, 16, 12)};
+            Edge(13, 16, 12),
+            Edge(9,22,14),
+            Edge(14,22,20)};
 
         int choice;
         // In main(), modify the choice menu:
