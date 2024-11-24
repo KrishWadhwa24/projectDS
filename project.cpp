@@ -9,8 +9,8 @@
 #include <climits>
 
 // Constants for visualization
-const int WINDOW_WIDTH = 800;
-const int WINDOW_HEIGHT = 600;
+const int WINDOW_WIDTH = 1920;
+const int WINDOW_HEIGHT = 1080;
 const float NODE_RADIUS = 10.0f;
 const float CLICK_RADIUS = 10.0f;
 const float ANIMATION_SPEED = 0.5f;
@@ -504,29 +504,60 @@ public:
 
         // Initialize nodes
         nodes = {
-            Node("House1", 100, 100),
-            Node("House2", 200, 50),
-            Node("House3", 300, 150),
-            Node("House4", 400, 100),
-            Node("House5", 500, 50),
-            Node("Store1", 150, 300),
-            Node("Store2", 350, 250),
-            Node("Store3", 450, 350)
+            Node("IndraPuram", 250, 200),
+            Node("Daily Needs", 150, 350),
+            Node("Lane 1", 500, 200),
+            Node("House 1", 500, 350),
+            Node("House 3", 500, 450),
+            Node("House 5", 500, 550),
+            Node("Lane 2", 650, 200),
+            Node("House 2", 650, 275),
+            Node("House 4", 650, 385),
+            Node("House 7", 650, 495),
+            Node("Noida", 1350, 125),
+            Node("House 8", 1250, 295),
+            Node("House 9", 1250, 395),
+            Node("House 10", 1250, 495),
+            Node("House 11", 1100, 340),
+            Node("House 12", 1100, 440),
+            Node("House 13", 1100, 540),
+            Node("House 14", 1550, 295),
+            Node("House 15", 1550, 400),
+            Node("House 16", 1550, 500),
+            Node("House 17", 1550, 650),
+            Node("Store 2", 1450, 700),
+            Node("WareHouse", 900, 750),
+            Node("Distributor", 400, 600)
         };
 
         // Initialize edges with weights
         edges = {
             Edge(0, 1, 10),
-            Edge(1, 2, 20),
+            Edge(0, 2, 20),
             Edge(2, 3, 10),
-            Edge(3, 4, 15),
-            Edge(0, 5, 25),
-            Edge(5, 6, 20),
-            Edge(6, 7, 30),
-            Edge(4, 7, 35),
-            Edge(2, 6, 15),
-            Edge(1, 5, 30),
-            Edge(3, 6, 20)
+            Edge(3, 4, 10),
+            Edge(4, 5, 10),
+            Edge(2, 6, 20),
+            Edge(6, 7, 10),
+            Edge(7, 8, 10),
+            Edge(8, 9, 12),
+            Edge(6, 10, 50),
+            Edge(10, 11, 14),
+            Edge(10, 21, 30),
+            Edge(10, 17, 20),
+            Edge(11, 12, 5),
+            Edge(12, 13, 5),
+            Edge(11, 14, 10),
+            Edge(14, 15, 5),
+            Edge(15, 16, 5),
+            Edge(17, 18, 8),
+            Edge(18, 19, 8),
+            Edge(19, 20, 8),
+            Edge(21, 22, 35),
+            Edge(1, 23, 30),
+            Edge(23, 22, 25),
+            Edge(5, 9, 10),
+            Edge(13, 16, 10)
         };
     }
 
@@ -555,28 +586,59 @@ public:
 int main() {
     try {
         std::vector<Node> nodes = {
-            Node("House1", 100, 100),
-            Node("House2", 200, 50),
-            Node("House3", 300, 150),
-            Node("House4", 400, 100),
-            Node("House5", 500, 50),
-            Node("Store1", 150, 300),
-            Node("Store2", 350, 250),
-            Node("Store3", 450, 350)
+           Node("IndraPuram", 250, 200),
+            Node("Daily Needs", 150, 350),
+            Node("Lane 1", 500, 200),
+            Node("House 1", 500, 350),
+            Node("House 3", 500, 450),
+            Node("House 5", 500, 550),
+            Node("Lane 2", 650, 200),
+            Node("House 2", 650, 275),
+            Node("House 4", 650, 385),
+            Node("House 7", 650, 495),
+            Node("Noida", 1350, 125),
+            Node("House 8", 1250, 295),
+            Node("House 9", 1250, 395),
+            Node("House 10", 1250, 495),
+            Node("House 11", 1100, 340),
+            Node("House 12", 1100, 440),
+            Node("House 13", 1100, 540),
+            Node("House 14", 1550, 295),
+            Node("House 15", 1550, 400),
+            Node("House 16", 1550, 500),
+            Node("House 17", 1550, 650),
+            Node("Store 2", 1450, 700),
+            Node("WareHouse", 900, 750),
+            Node("Distributor", 400, 600)
         };
 
         std::vector<Edge> edges = {
             Edge(0, 1, 10),
-            Edge(1, 2, 20),
+            Edge(0, 2, 20),
             Edge(2, 3, 10),
-            Edge(3, 4, 15),
-            Edge(0, 5, 25),
-            Edge(5, 6, 20),
-            Edge(6, 7, 30),
-            Edge(4, 7, 35),
-            Edge(2, 6, 15),
-            Edge(1, 5, 30),
-            Edge(3, 6, 20)
+            Edge(3, 4, 10),
+            Edge(4, 5, 10),
+            Edge(2, 6, 20),
+            Edge(6, 7, 10),
+            Edge(7, 8, 10),
+            Edge(8, 9, 12),
+            Edge(6, 10, 50),
+            Edge(10, 11, 14),
+            Edge(10, 21, 30),
+            Edge(10, 17, 20),
+            Edge(11, 12, 5),
+            Edge(12, 13, 5),
+            Edge(11, 14, 10),
+            Edge(14, 15, 5),
+            Edge(15, 16, 5),
+            Edge(17, 18, 8),
+            Edge(18, 19, 8),
+            Edge(19, 20, 8),
+            Edge(21, 22, 35),
+            Edge(1, 23, 30),
+            Edge(23, 22, 25),
+            Edge(5, 9, 10),
+            Edge(13, 16, 10)
         };
 
         int choice;
