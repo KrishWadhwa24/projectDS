@@ -28,6 +28,153 @@ struct Edge {
     int weight;
 
     Edge(int f, int t, int w) : from(f), to(t), weight(w) {}
+    
+    bool operator<(const Edge& other) const {
+        return weight < other.weight;
+    }
+};
+
+// DisjointSet class for Kruskal's algorithm
+class DisjointSet {
+private:
+    std::vector<int> parent;
+    std::vector<int> rank;
+
+public:
+    DisjointSet(int n) {
+        parent.resize(n);
+        rank.resize(n, 0);
+        for (int i = 0; i < n; i++) {
+            parent[i] = i;
+        }
+    }
+
+    int find(int x) {
+        if (parent[x] != x) {
+            parent[x] = find(parent[x]);
+        }
+        return parent[x];
+    }
+
+    void unite(int x, int y) {
+        int px = find(x);
+        int py = find(y);
+        
+        if (rank[px] < rank[py]) {
+            parent[px] = py;
+        } else if (rank[px] > rank[py]) {
+            parent[py] = px;
+        } else {
+            parent[py] = px;
+            rank[px]++;
+        }
+    }
+};
+
+// MST Visualizer class
+class MSTVisualizer {
+private:
+    sf::RenderWindow window;
+    std::vector<Node> nodes;
+    std::vector<Edge> edges;
+    std::vector<Edge> mstEdges;
+    sf::Font font;
+
+    void calculateMST() {
+        // Sort edges by weight
+        std::vector<Edge> sortedEdges = edges;
+        std::sort(sortedEdges.begin(), sortedEdges.end());
+
+        // Initialize disjoint set
+        DisjointSet ds(nodes.size());
+        mstEdges.clear();
+
+        // Kruskal's algorithm
+        for (const Edge& edge : sortedEdges) {
+            if (ds.find(edge.from) != ds.find(edge.to)) {
+                mstEdges.push_back(edge);
+                ds.unite(edge.from, edge.to);
+            }
+        }
+    }
+
+    void drawEdges() {
+        for (const auto& edge : mstEdges) {
+            sf::Vertex line[] = {
+                sf::Vertex(nodes[edge.from].position, sf::Color::Blue),
+                sf::Vertex(nodes[edge.to].position, sf::Color::Blue)
+            };
+            window.draw(line, 2, sf::Lines);
+
+            // Draw edge weights
+            sf::Text weightText;
+            weightText.setFont(font);
+            weightText.setString(std::to_string(edge.weight));
+            weightText.setCharacterSize(14);
+            weightText.setFillColor(sf::Color::White);
+            
+            sf::Vector2f midpoint = (nodes[edge.from].position + nodes[edge.to].position) / 2.f;
+            weightText.setPosition(midpoint);
+            
+            sf::FloatRect textBounds = weightText.getLocalBounds();
+            weightText.setOrigin(textBounds.width / 2, textBounds.height / 2);
+            
+            window.draw(weightText);
+        }
+    }
+
+    void drawNodes() {
+        for (size_t i = 0; i < nodes.size(); ++i) {
+            sf::CircleShape circle(NODE_RADIUS);
+            circle.setPosition(nodes[i].position - sf::Vector2f(NODE_RADIUS, NODE_RADIUS));
+            circle.setFillColor(sf::Color::Green);
+            window.draw(circle);
+
+            // Draw node names
+            sf::Text nodeText;
+            nodeText.setFont(font);
+            nodeText.setString(nodes[i].name);
+            nodeText.setCharacterSize(16);
+            nodeText.setFillColor(sf::Color::White);
+            
+            sf::FloatRect textBounds = nodeText.getLocalBounds();
+            nodeText.setOrigin(textBounds.width / 2, textBounds.height + NODE_RADIUS);
+            nodeText.setPosition(nodes[i].position);
+            
+            window.draw(nodeText);
+        }
+    }
+
+public:
+    MSTVisualizer(const std::vector<Node>& n, const std::vector<Edge>& e) : 
+        window(sf::VideoMode(WINDOW_WIDTH, WINDOW_HEIGHT), "Minimum Spanning Tree Visualization"),
+        nodes(n),
+        edges(e) {
+        
+        window.setFramerateLimit(60);
+
+        if (!font.loadFromFile("arial.ttf")) {
+            throw std::runtime_error("Error loading font. Ensure arial.ttf is in the same directory.");
+        }
+
+        calculateMST();
+    }
+
+    void run() {
+        while (window.isOpen()) {
+            sf::Event event;
+            while (window.pollEvent(event)) {
+                if (event.type == sf::Event::Closed) {
+                    window.close();
+                }
+            }
+
+            window.clear(sf::Color::Black);
+            drawEdges();
+            drawNodes();
+            window.display();
+        }
+    }
 };
 
 class DeliveryRouteVisualizer {
@@ -54,12 +201,10 @@ private:
     int currentSegment;
     sf::CircleShape deliveryMarker;
 
-    // Calculate shortest distance between any two nodes using Dijkstra
     std::vector<std::vector<int>> calculateDistanceMatrix() {
         int n = nodes.size();
         std::vector<std::vector<int>> dist(n, std::vector<int>(n, INT_MAX));
         
-        // Calculate shortest path between all pairs of nodes
         for (int i = 0; i < n; i++) {
             auto [distances, _] = dijkstra(i);
             for (int j = 0; j < n; j++) {
@@ -69,7 +214,6 @@ private:
         return dist;
     }
 
-    // Find optimal order of waypoints using nearest neighbor algorithm
     std::vector<int> findOptimalWaypointOrder(const std::vector<int>& waypoints) {
         if (waypoints.size() <= 2) return waypoints;
 
@@ -77,11 +221,9 @@ private:
         std::vector<int> optimalOrder;
         std::vector<bool> visited(waypoints.size(), false);
         
-        // Start with the first waypoint
         optimalOrder.push_back(waypoints[0]);
         visited[0] = true;
         
-        // Find nearest unvisited waypoint
         while (optimalOrder.size() < waypoints.size()) {
             int currentNode = optimalOrder.back();
             int nearestDist = INT_MAX;
@@ -138,18 +280,15 @@ private:
     std::vector<int> findMultiPointPath(const std::vector<int>& waypoints) {
         if (waypoints.size() < 2) return {};
         
-        // First optimize the order of waypoints
         std::vector<int> optimizedWaypoints = findOptimalWaypointOrder(waypoints);
         std::vector<int> completePath;
         
-        // For each consecutive pair of optimized waypoints
         for (size_t i = 0; i < optimizedWaypoints.size() - 1; i++) {
             auto [distances, previous] = dijkstra(optimizedWaypoints[i]);
             std::vector<int> segment = reconstructPath(optimizedWaypoints[i], optimizedWaypoints[i + 1], previous);
             
-            if (segment.empty()) return {}; // No valid path found
+            if (segment.empty()) return {};
             
-            // Add segment to complete path (skip duplicate node)
             if (!completePath.empty()) segment.erase(segment.begin());
             completePath.insert(completePath.end(), segment.begin(), segment.end());
         }
@@ -175,7 +314,6 @@ private:
             if (event.mouseButton.button == sf::Mouse::Left) {
                 handleMouseClick(sf::Vector2f(event.mouseButton.x, event.mouseButton.y));
             } else if (event.mouseButton.button == sf::Mouse::Right) {
-                // Finish current order
                 if (!orders.empty() && !orders.back().isComplete) {
                     orders.back().isComplete = true;
                 }
@@ -189,16 +327,14 @@ private:
             float dy = nodes[i].position.y - mousePos.y;
             if (std::sqrt(dx * dx + dy * dy) < CLICK_RADIUS) {
                 if (orders.empty() || orders.back().isComplete) {
-                    // Start new order
                     Order newOrder;
                     newOrder.waypoints.push_back(static_cast<int>(i));
                     orders.push_back(newOrder);
                 } else {
-                    // Add waypoint to current order
                     auto& currentOrder = orders.back();
                     if (!currentOrder.waypoints.empty() && 
                         currentOrder.waypoints.back() == static_cast<int>(i)) {
-                        return; // Prevent duplicate consecutive waypoints
+                        return;
                     }
                     currentOrder.waypoints.push_back(static_cast<int>(i));
                 }
@@ -267,7 +403,6 @@ private:
 
             window.draw(line, 2, sf::Lines);
 
-            // Draw edge weights
             sf::Text weightText;
             weightText.setFont(font);
             weightText.setString(std::to_string(edge.weight));
@@ -290,25 +425,23 @@ private:
             circle.setPosition(nodes[i].position - sf::Vector2f(NODE_RADIUS, NODE_RADIUS));
             circle.setFillColor(sf::Color::Green);
 
-            // Color current order waypoints
             if (!orders.empty() && !orders.back().isComplete) {
                 const auto& currentOrder = orders.back();
                 size_t waypointIndex = 0;
                 for (int waypoint : currentOrder.waypoints) {
                     if (static_cast<int>(i) == waypoint) {
                         if (waypointIndex == 0) {
-                            circle.setFillColor(sf::Color::Yellow); // Start
+                            circle.setFillColor(sf::Color::Yellow);
                         } else if (waypointIndex == currentOrder.waypoints.size() - 1) {
-                            circle.setFillColor(sf::Color::Magenta); // Current end
+                            circle.setFillColor(sf::Color::Magenta);
                         } else {
-                            circle.setFillColor(sf::Color::Cyan); // Intermediate
+                            circle.setFillColor(sf::Color::Cyan);
                         }
                     }
                     waypointIndex++;
                 }
             }
             
-            // Color active order waypoints
             if (!activeOrders.empty()) {
                 const auto& activeOrder = activeOrders.front();
                 size_t waypointIndex = 0;
@@ -328,7 +461,6 @@ private:
 
             window.draw(circle);
 
-            // Draw node names
             sf::Text nodeText;
             nodeText.setFont(font);
             nodeText.setString(nodes[i].name);
@@ -422,8 +554,53 @@ public:
 //Main Function
 int main() {
     try {
-        DeliveryRouteVisualizer visualizer;
-        visualizer.run();
+        std::vector<Node> nodes = {
+            Node("House1", 100, 100),
+            Node("House2", 200, 50),
+            Node("House3", 300, 150),
+            Node("House4", 400, 100),
+            Node("House5", 500, 50),
+            Node("Store1", 150, 300),
+            Node("Store2", 350, 250),
+            Node("Store3", 450, 350)
+        };
+
+        std::vector<Edge> edges = {
+            Edge(0, 1, 10),
+            Edge(1, 2, 20),
+            Edge(2, 3, 10),
+            Edge(3, 4, 15),
+            Edge(0, 5, 25),
+            Edge(5, 6, 20),
+            Edge(6, 7, 30),
+            Edge(4, 7, 35),
+            Edge(2, 6, 15),
+            Edge(1, 5, 30),
+            Edge(3, 6, 20)
+        };
+
+        int choice;
+        std::cout << "Choose visualization type:\n";
+        std::cout << "1. Delivery Route Visualization\n";
+        std::cout << "2. Minimum Spanning Tree\n";
+        std::cout << "Enter your choice (1 or 2): ";
+        std::cin >> choice;
+
+        switch (choice) {
+            case 1: {
+                DeliveryRouteVisualizer deliveryVisualizer;
+                deliveryVisualizer.run();
+                break;
+            }
+            case 2: {
+                MSTVisualizer mstVisualizer(nodes, edges);
+                mstVisualizer.run();
+                break;
+            }
+            default:
+                std::cout << "Invalid choice. Please select 1 or 2.\n";
+                return 1;
+        }
     } catch (const std::exception& ex) {
         std::cerr << "Error: " << ex.what() << std::endl;
         return 1;
